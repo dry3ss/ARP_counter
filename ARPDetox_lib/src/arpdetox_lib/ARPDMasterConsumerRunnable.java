@@ -36,7 +36,8 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
         if(null == type_sent)
             return false;//problem !
         //check validity of signature and ...
-        boolean good=received.getSuffix().isValid(server.passwd);
+        long timestamp_now=System.currentTimeMillis();
+        boolean good=received.getSuffix().isValid(server.passwd,timestamp_now);
         if(!good)
             return false;//bad msg !
         //Check the type(here only start/stop) of message

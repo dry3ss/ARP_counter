@@ -48,7 +48,7 @@ public class ARPDetox_lib {
             MACAddress mac_master=new MACAddress("aa:bb:cc:dd:ee:ff");
             
             ARPDOrder order=new ARPDOrder(ARPDMessage.ARPD_MESSAGE_TYPE.ORDER_START_ARPD,true,(short)3000,addr_master,mac_master,addr_slave,order_nb,password);
-            System.out.println(order.toString(0,password));
+            System.out.println(order.toString(0,password,System.currentTimeMillis()));
             bytes_sent=order.toBytes();
             
         } catch (UnknownHostException ex) {
@@ -66,7 +66,7 @@ public class ARPDetox_lib {
             if(type_sent.getAssociatedClass() == ARPDOrder.class)
             {
                 ARPDOrder received=ARPDMessage.fromBytes(type_sent,bytes_sent);
-                System.out.println(received.toString(0,password));
+                System.out.println(received.toString(0,password,System.currentTimeMillis()));
                 
                 Inet4Address addr_dst_received=received.getIP_dst();
                 if(addr_dst_received.equals(addr_slave)|| received.isEveryone_acts_or_only_dst())
@@ -86,7 +86,7 @@ public class ARPDetox_lib {
                         default:
                             return;
                     }
-                    String a=answer.toString(0,password);
+                    String a=answer.toString(0,password,System.currentTimeMillis());
                     System.out.println(a);
                     
                 }

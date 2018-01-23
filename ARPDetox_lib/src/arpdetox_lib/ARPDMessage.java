@@ -44,6 +44,7 @@ public abstract class ARPDMessage {
         hexChars[1] = hexArray[v & 0x0F];
         return new String(hexChars);
     }
+    protected final static Logger logger=Logger.getLogger(ARPDetox_lib.class.getName());
     
     public static String nTabs(int n)
     {
@@ -458,22 +459,22 @@ public abstract class ARPDMessage {
         }
         
         
-        public boolean isValid(byte [] password)
+        public boolean isValid(byte [] password,long timestamp_for_comparison)
         {
             //TODO ajouter toutes les autres verifs
             boolean r= this.hasValidSignatureForPayload(password);
-            r= r && hasValidTimestamp();
+            r= r && hasValidTimestamp(timestamp_for_comparison);
             return r;
         }
-        public boolean hasValidTimestamp()
+        public boolean hasValidTimestamp(long compared_to)
         {
             long low =this.timestamp-TIMESTAMP_HALF_WINDOW_MS;
-            long high =this.timestamp+TIMESTAMP_HALF_WINDOW_MS; 
-            long time_now=System.currentTimeMillis();
+            long high =this.timestamp+TIMESTAMP_HALF_WINDOW_MS;
             boolean r=
-                    (time_now <= high )
+                    (compared_to <= high )
                     &&
-                    (time_now >= low );
+                    (compared_to >= low );
+            logger.log(Level.INFO, ""+compared_to+"-> ["+low+" ; "+high+"]");
             return r;
         }
         
@@ -528,14 +529,14 @@ public abstract class ARPDMessage {
 
         public String toString(int i) 
         {
-            return toString(i,null);
+            return toString(i,null,System.currentTimeMillis());
         
         }
-        public String toString(int i,byte[] passwd) 
+        public String toString(int i,byte[] passwd, long timestamp_for_comparison) 
         {
             String spaces=nTabs(i);
             i++;
-            return "Suffix : "+ "IS_VALID ?:"+isValid(passwd)+"(Signature valid:"+hasValidSignatureForPayload(passwd)+" ; Timestamp valid :"+hasValidTimestamp()
+            return "Suffix : "+ "IS_VALID ?:"+isValid(passwd,timestamp_for_comparison)+"(Signature valid:"+hasValidSignatureForPayload(passwd)+" ; Timestamp valid :"+hasValidTimestamp(timestamp_for_comparison)
                     +spaces+'{'
                     +spaces+ "\t"+ "timestamp_and_noonce_bytes=" + bytesToHex(timestamp_and_noonce_bytes)
                     +spaces+ "\t"+"timestamp=" + timestamp + ", noonce=" + noonce 
@@ -600,9 +601,9 @@ public abstract class ARPDMessage {
     
     public String toString(int i)
     {
-        return toString(i,null); 
+        return toString(i,null,System.currentTimeMillis()); 
     }
-    public abstract String toString(int i, byte[] passwd);
+    public abstract String toString(int i, byte[] passwd,long timestamp_for_comparison);
     public abstract ARPD_MESSAGE_TYPE getMsg_type();
         
     public abstract Suffix getSuffix();
@@ -693,10 +694,10 @@ public abstract class ARPDMessage {
             IP_dst= getIpv4AddressFromBytes(address_buff);
         }
         
-        public boolean isValid(byte[] passwd)
+        public boolean isValid(byte[] passwd,long timestamp_for_comparison)
         {
             //TODO add other ocnditions
-            return suffix.isValid(passwd);
+            return suffix.isValid(passwd, timestamp_for_comparison);
         }
         
         
@@ -751,16 +752,16 @@ public abstract class ARPDMessage {
 
         
         @Override
-        public String toString(int i, byte[] passwd) 
+        public String toString(int i, byte[] passwd,long timestamp_for_comparison) 
         {
             String spaces=nTabs(i);
             i++;
-            return "ARPDOrder"+ " IS_VALID ? "+ isValid(passwd)
+            return "ARPDOrder"+ " IS_VALID ? "+ isValid(passwd, timestamp_for_comparison)
                     +spaces+'{'
                     +spaces+"\t"+"msg_type=" + msg_type + ", everyone_acts_or_only_dst=" + everyone_acts_or_only_dst +", AD=" + AD 
                     +spaces+"\t"+ ", IP_src=" + IP_src + ", MAC_src=" + MAC_src 
                     +spaces+"\t"+ ", IP_dst=" + IP_dst 
-                    +spaces+"\t"+ ", suffix=" + suffix.toString(i,passwd)
+                    +spaces+"\t"+ ", suffix=" + suffix.toString(i,passwd, timestamp_for_comparison)
                     +spaces+"}";        
         }
 
@@ -911,22 +912,22 @@ public abstract class ARPDMessage {
         }
         
         
-        public boolean isValid(byte[] passwd)
+        public boolean isValid(byte[] passwd,long timestamp_for_comparison)
         {
             //TODO add other ocnditions
-            return suffix.isValid(passwd);
+            return suffix.isValid(passwd,timestamp_for_comparison);
         }
         
         @Override
-        public String toString(int i, byte[] passwd) 
+        public String toString(int i, byte[] passwd,long timestamp_for_comparison) 
         {
             String spaces=nTabs(i);
             i++;
-            return "ARPDAnswer"+" IS_VALID : "+isValid(passwd)
+            return "ARPDAnswer"+" IS_VALID : "+isValid(passwd, timestamp_for_comparison)
                     +spaces+'{'
                     +spaces+"\t"+"msg_type=" + msg_type + ", answer_is_1_confirmation_is_0=" + answer_is_1_confirmation_is_0
                     +spaces+"\t"+ ", IP_src=" + IP_src + ", MAC_src=" + MAC_src 
-                    +spaces+"\t"+ ", suffix=" + suffix.toString(i,passwd)
+                    +spaces+"\t"+ ", suffix=" + suffix.toString(i,passwd,timestamp_for_comparison)
                     +spaces+"}";        
         }
 

@@ -45,7 +45,8 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
         if(!primary_dst  && !secondary_dst)
             return false;//not a message for us
         //check validity of signature and ...
-        boolean good=received.getSuffix().isValid(server.passwd);
+        long timestamp_now=System.currentTimeMillis();
+        boolean good=received.getSuffix().isValid(server.passwd,timestamp_now);
         if(!good)
             return false;//bad msg !
         //select the type of msg we will send back based on the type of order
@@ -147,7 +148,8 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
         if(null == type_sent)
             return false;//problem !
         //check validity of signature and ...
-        boolean good=received.getSuffix().isValid(server.passwd);
+        long timestamp_now=System.currentTimeMillis();
+        boolean good=received.getSuffix().isValid(server.passwd,timestamp_now);
         if(!good)
             return false;//bad msg !
         //select the type of msg we will send back based on the type of order
