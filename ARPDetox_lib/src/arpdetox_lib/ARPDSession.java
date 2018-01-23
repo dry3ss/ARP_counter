@@ -376,5 +376,11 @@ public class ARPDSession<T extends UDPServer> {
     {
         return ! (current_order_id<0 || ! current_state.isValidState());
     }
+
+    public ReentrantLock getSession_reentrant_lock() {
+	return session_reentrant_lock;
+    }
+    
+    
     
 }

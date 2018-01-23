@@ -35,6 +35,7 @@ public class UDPServer<T extends UDPServer>
     public static final int MAX_MSG_STORED=30;
     public static final int DEFAULT_TIMEOUT_MS=30;//we will timeout after 30 ms by default
     
+    protected final static Logger logger=Logger.getLogger(ARPDetox_lib.class.getName());
     
     
     public static class Message_InetSocketAddress_Pair
@@ -187,8 +188,11 @@ public class UDPServer<T extends UDPServer>
                 for(InterfaceAddress ia : list_interface_address)
                 {
                     InetAddress broadcast_address=ia.getBroadcast();
-                    if(broadcast_address.getClass() == Inet4Address.class)
-                        res.add((Inet4Address) broadcast_address);
+                    if(broadcast_address!=null && broadcast_address.getClass() == Inet4Address.class)
+		    {
+			if(! broadcast_address.isLoopbackAddress() && ! broadcast_address.isLinkLocalAddress() )
+			    res.add((Inet4Address) broadcast_address);
+		    }
                 }
             }
             
@@ -261,25 +265,31 @@ public class UDPServer<T extends UDPServer>
                         continue;
                     int bytesSent =0;
                     if(!mess_to_write.getIsFullBroadcast())
-                        bytesSent = channel.send(mess_to_write.getMess(), mess_to_write.getSocketAddress());
+		    {
+			bytesSent = channel.send(mess_to_write.getMess(), mess_to_write.getSocketAddress());
+			if(bytesSent!= mess_to_write.getMess().limit())
+			{
+			    System.err.println("Nb of bytes written mismatch : bytesSent= "+bytesSent+" position()= "+mess_to_write.getMess().limit());
+			}
+			else
+			    System.out.println(getNameIpPort()+":"+"Message sent to "+mess_to_write.getSocketAddress().getAddress().getHostAddress()+"::"+mess_to_write.getPort());
+                
+		    }
                     else
                     {
                         ArrayList<Inet4Address> broadcast_addresses=getBroadcastAddressesFromAllInterfaces();
                         for(Inet4Address broadcast_address : broadcast_addresses)
                         {
+			    //logger.log(Level.INFO,broadcast_address.toString());
                             bytesSent = channel.send(mess_to_write.getMess(), new InetSocketAddress(broadcast_address,mess_to_write.getPort()));
                             if(bytesSent!= mess_to_write.getMess().limit())
                             {
                                 System.err.println("Nb of bytes written mismatch : bytesSent= "+bytesSent+" position()= "+mess_to_write.getMess().limit());
-                            }
+                            } 
+			    else
+				System.out.println(getNameIpPort()+":"+"Message sent to "+broadcast_address.getHostAddress()+"::"+mess_to_write.getPort());
                         }
                     }
-                    if(bytesSent!= mess_to_write.getMess().limit())
-                    {
-                        System.err.println("Nb of bytes written mismatch : bytesSent= "+bytesSent+" position()= "+mess_to_write.getMess().limit());
-                    }
-                    else
-                        System.out.println(getNameIpPort()+":"+"Message sent");
                 }
                 else
                     break;

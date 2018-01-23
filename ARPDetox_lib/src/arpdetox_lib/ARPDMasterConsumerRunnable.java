@@ -165,6 +165,7 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
         ARPDSessionTableContainer session_table_container=server.getSessionTable();
         //it's content: the actual table with the messages waiting
         ArrayList<ARPDSession> session_table=session_table_container.getContent();
+	ARPDBroadcastSession broadcast_session=server.getBroadcastSession();
         while(server.isRunning())
         {
             //read messages and callback()
@@ -175,7 +176,7 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
                     callback(buff);
             }catch(InterruptedException ie){}
             
-            //try to write messages stored in the session
+            //try to write messages stored in the sessions
             boolean got_lock=session_table_container.getLock().readLock().tryLock();
             try
             {
@@ -192,6 +193,20 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
             {
                 if(got_lock)
                     session_table_container.getLock().readLock().unlock();
+            }
+	    //try to write messages stored in the broadcast session
+            got_lock=broadcast_session.getSession_reentrant_lock().tryLock(); 
+            try
+            {
+                if(got_lock)
+                {
+		    broadcast_session.SendMessageIfDirectlyPossible(server);                    
+                }
+            }
+            finally
+            {
+                if(got_lock)
+                    broadcast_session.getSession_reentrant_lock().unlock();
             }
             
         }

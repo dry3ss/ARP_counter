@@ -33,6 +33,8 @@ public class ARPD_test_master {
             String addr_slave_1="192.168.1.100";
             String addr_slave_2="192.168.1.101";
             String addr_slave_3="192.168.1.102";
+	    String addr_broadcast="192.168.1.255";
+	    
                 
             IPInfoContainers.SourceIPInfo s1_src_info= new IPInfoContainers.SourceIPInfo(localhost,port_master);
             
@@ -47,11 +49,37 @@ public class ARPD_test_master {
             //de plusieurs sous réseaux différents donc avec des addresses différentes
             ARPDServer.ARPDServerMaster s1= new ARPDServer.ARPDServerMaster(s1_src_info,cr1);
             s1.setPasswd(password);
+	    s1.start();
+	    System.out.println("started");
+	    Thread.sleep(1000);
+	    
+	    //##########################
+	    
+	    IPInfoContainers.DestIPInfo s2_dst_info = new IPInfoContainers.DestIPInfo(addr_broadcast,common_port_slaves);
+	    ARPDSession s1_2= new ARPDSession(s1,s2_dst_info);
+            s1.getSessionTable().addARPDSession(s1_2);
+	    
+	    System.out.println("servers started");
+            
+            ByteBuffer mess=ByteBuffer.allocate(50);
+            mess.put("lala".getBytes());
+            mess.flip();
+            byte[] msg=getAllRemainingBytesFromByteBuffer(mess,false);
+            s1.getSessionTable().sendSingleMessageToSessionAtIndex(s1_2.getSession_container_id(), msg);
+	    
+	    Thread.sleep(1000);
+            
+            s1.close();
+	    
+	    if(true)
+		System.exit(0);
+	    //############################""""
+	    System.out.println("sending");
             s1.sendStartARPD("192.168.1.1", (short)1000, true);
             
-            //s3.send(to_send3);
             Thread.sleep(10000);
             
+	    System.out.println("closing");
             s1.close();
             
             
