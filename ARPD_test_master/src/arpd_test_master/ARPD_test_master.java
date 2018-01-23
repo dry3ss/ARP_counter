@@ -54,7 +54,7 @@ public class ARPD_test_master {
 	    Thread.sleep(1000);
 	    
 	    //##########################
-	    
+	    /*
 	    IPInfoContainers.DestIPInfo s2_dst_info = new IPInfoContainers.DestIPInfo(addr_broadcast,common_port_slaves);
 	    ARPDSession s1_2= new ARPDSession(s1,s2_dst_info);
             s1.getSessionTable().addARPDSession(s1_2);
@@ -74,6 +74,7 @@ public class ARPD_test_master {
 	    if(true)
 		System.exit(0);
 	    //############################""""
+*/
 	    System.out.println("sending");
             s1.sendStartARPD("192.168.1.1", (short)1000, true);
             

@@ -87,6 +87,7 @@ public class ARPDServer
                 int order_nb=getBroadcastSession().getNextOrderId();
                 ARPDOrder order=new ARPDOrder(msg_type,true,action_delay,getSrc_ip_info().getIp_src(),getSrc_ip_info().getMac_src(),addr_primary_slave_dst,order_nb,passwd);
                 setupSessions(order_nb,everyone_acts_or_only_dst_,addr_primary_slave_dst,state_after_sent);
+		logger.log(Level.INFO,order.toString(0, passwd));
                 getBroadcastSession().sendLoopMessage(order.toBytes());
             } catch (UnknownHostException | InvalidParameterException ex) {
                 Logger.getLogger(ARPDServer.class.getName()).log(Level.SEVERE, null, ex);

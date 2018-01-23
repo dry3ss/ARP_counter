@@ -535,7 +535,7 @@ public abstract class ARPDMessage {
         {
             String spaces=nTabs(i);
             i++;
-            return "Suffix : "+ "IS_VALID ?:"+isValid(passwd)
+            return "Suffix : "+ "IS_VALID ?:"+isValid(passwd)+"(Signature valid:"+hasValidSignatureForPayload(passwd)+" ; Timestamp valid :"+hasValidTimestamp()
                     +spaces+'{'
                     +spaces+ "\t"+ "timestamp_and_noonce_bytes=" + bytesToHex(timestamp_and_noonce_bytes)
                     +spaces+ "\t"+"timestamp=" + timestamp + ", noonce=" + noonce 
