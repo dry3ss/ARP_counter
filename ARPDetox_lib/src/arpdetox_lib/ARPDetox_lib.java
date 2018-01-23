@@ -107,7 +107,7 @@ public class ARPDetox_lib {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void maina(String[] args) {
        testMsgInterpret();
        Inet4Address ip;
         try {

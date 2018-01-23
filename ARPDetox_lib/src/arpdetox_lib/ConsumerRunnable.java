@@ -51,7 +51,7 @@ public class ConsumerRunnable<T extends UDPServer> extends RunnableUDPServerInte
     }
     
     
-    public static void dumpMsg(byte[] bytes_received)
+    public void dumpMsg(byte[] bytes_received)
     {
          if(bytes_received==null ||  bytes_received.length<1)
         {

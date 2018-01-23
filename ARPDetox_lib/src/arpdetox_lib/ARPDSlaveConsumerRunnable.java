@@ -9,6 +9,7 @@ import static arpdetox_lib.ARPDMessage.ARPD_MESSAGE_TYPE.ANSWER_ACK_START;
 import static arpdetox_lib.ARPDMessage.ARPD_MESSAGE_TYPE.ANSWER_ACK_STOP;
 import static arpdetox_lib.ARPDMessage.ARPD_MESSAGE_TYPE.ORDER_START_ARPD;
 import static arpdetox_lib.ARPDMessage.ARPD_MESSAGE_TYPE.ORDER_STOP_ARPD;
+import static arpdetox_lib.ARPDMessage.bytesToHex;
 import static arpdetox_lib.ARPDMessage.getMsgTypeFromBytes;
 import arpdetox_lib.ARPDServer.*;
 import static arpdetox_lib.ARPDServer.ARDP_MASTER_PORT;
@@ -16,6 +17,7 @@ import arpdetox_lib.ARPDSession.ARPDSessionState;
 import static arpdetox_lib.ARPDSession.ARPDSessionState.*;
 import arpdetox_lib.ARPDSessionContainer.*;
 import static arpdetox_lib.ConsumerRunnable.TIMEOUT_CONSUMER_THREAD;
+import static arpdetox_lib.ConsumerRunnable.logger;
 import arpdetox_lib.IPInfoContainers.DestIPInfo;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -38,6 +40,7 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
         
         if(null == type_sent)
             return false;//problem !
+        dumpMsg(received.toBytes());
         //check if the message is for us or not (all orders are sent as broadcast !)
         Inet4Address addr_dst_received=received.getIP_dst();
         boolean primary_dst=addr_dst_received.equals(src_ip_info.getIp_src());
@@ -272,6 +275,27 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
                     single_session_container.getLock().readLock().unlock();
             }
 
+        }
+    }
+    
+    @Override
+        public void dumpMsg(byte[] bytes_received)
+    {
+         if(bytes_received==null ||  bytes_received.length<1)
+        {
+            logger.log(Level.WARNING, "Null or empty message received");
+            return;
+        }
+        //Try to cast it as an ARPDMessage
+        try
+        {
+            ARPDMessage.ARPD_MESSAGE_TYPE type_sent=getMsgTypeFromBytes(bytes_received);
+            ARPDMessage mess=ARPDMessage.fromBytes(type_sent,bytes_received);
+            logger.log(Level.WARNING, "Could not handle the following ARPDMessage message :\n{0}", mess.toString(0,server.passwd,System.currentTimeMillis()));
+        } catch (UnknownHostException | InvalidParameterException ex) 
+        {
+            logger.log(Level.WARNING, "Could not cast the following as ARPDMessage, dumping :\n{0}\nReason:\n", bytesToHex(bytes_received));
+            logger.log(Level.WARNING, null, ex);
         }
     }
 

@@ -213,5 +213,26 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
         }
     }
     
+    
+        @Override
+        public void dumpMsg(byte[] bytes_received)
+    {
+         if(bytes_received==null ||  bytes_received.length<1)
+        {
+            logger.log(Level.WARNING, "Null or empty message received");
+            return;
+        }
+        //Try to cast it as an ARPDMessage
+        try
+        {
+            ARPDMessage.ARPD_MESSAGE_TYPE type_sent=getMsgTypeFromBytes(bytes_received);
+            ARPDMessage mess=ARPDMessage.fromBytes(type_sent,bytes_received);
+            logger.log(Level.WARNING, "Could not handle the following ARPDMessage message :\n{0}", mess.toString(0,server.passwd,System.currentTimeMillis()));
+        } catch (UnknownHostException | InvalidParameterException ex) 
+        {
+            logger.log(Level.WARNING, "Could not cast the following as ARPDMessage, dumping :\n{0}\nReason:\n", bytesToHex(bytes_received));
+            logger.log(Level.WARNING, null, ex);
+        }
+    }
 
 }
