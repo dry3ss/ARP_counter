@@ -474,7 +474,7 @@ public abstract class ARPDMessage {
                     (compared_to <= high )
                     &&
                     (compared_to >= low );
-            logger.log(Level.INFO, ""+compared_to+"-> ["+low+" ; "+high+"]");
+            //logger.log(Level.INFO, ""+compared_to+"-> ["+low+" ; "+high+"]");
             return r;
         }
         
@@ -586,11 +586,12 @@ public abstract class ARPDMessage {
         try{
             Class<T> return_class=type.getAssociatedClass();
             Class[] parameters_class=new Class[] {ARPD_MESSAGE_TYPE.class,byte[].class};
-            Object[] parameters=new Object[]{ARPD_MESSAGE_TYPE.ORDER_START_ARPD,msg};
+            Object[] parameters=new Object[]{type,msg};
             return return_class.getDeclaredConstructor(parameters_class).newInstance(parameters);
         }
         catch (InstantiationException | IllegalAccessException|  IllegalArgumentException|  InvocationTargetException|  NoSuchMethodException ex)
         {
+            ex.printStackTrace();
             throw new InvalidParameterException("Could not translate the message into an instance of ARPDMessage's children");
         }
     }
@@ -835,13 +836,13 @@ public abstract class ARPDMessage {
             suffix=new Suffix(payload,order_nb,passwd); 
         }
         
-        //CONSTRUCTOR 2 : when you receive an order and want to read it
+        //CONSTRUCTOR 2 : when you receive an answer and want to read it
         //this one is not public because you don't know which kind of message you received
         //so you use ARPDMessage.fromBytes() to get it
         protected ARPDAnswer(final ARPD_MESSAGE_TYPE type,final byte[] msg) 
                 throws InvalidParameterException, UnknownHostException
         {
-            if(type != ARPD_MESSAGE_TYPE.ORDER_START_ARPD || type != ARPD_MESSAGE_TYPE.ORDER_STOP_ARPD)
+            if(type != ARPD_MESSAGE_TYPE.ANSWER_ACK_STOP && type != ARPD_MESSAGE_TYPE.ANSWER_ACK_START)
                 throw new InvalidParameterException("This msg is not of the right type to be an order");
             if(msg.length!=this.BYTES())
                 throw new InvalidParameterException("This msg doesn't have the right size for an order");

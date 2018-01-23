@@ -70,6 +70,16 @@ public class UDPServer<T extends UDPServer>
             mess.flip();
             has_msg=true;
         }
+        public void setMess(ByteBuffer other)   throws InvalidParameterException
+        {
+            ByteBuffer data = other.duplicate();
+            if (data.limit() > mess.capacity())//let's throw instead of putting mess into an unknown state
+                throw new InvalidParameterException("Want to fill the msg with too much data");
+            mess.clear();
+            mess.put(data);
+            mess.flip();
+            has_msg=true;
+        }
 
         public void resetMess()
         {

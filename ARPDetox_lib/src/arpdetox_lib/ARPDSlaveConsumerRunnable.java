@@ -40,7 +40,6 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
         
         if(null == type_sent)
             return false;//problem !
-        dumpMsg(received.toBytes());
         //check if the message is for us or not (all orders are sent as broadcast !)
         Inet4Address addr_dst_received=received.getIP_dst();
         boolean primary_dst=addr_dst_received.equals(src_ip_info.getIp_src());
