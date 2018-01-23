@@ -214,12 +214,15 @@ public class UDPServer<T extends UDPServer>
         channel.configureBlocking(false);
         //allow broadcasting on our socket
         channel.setOption(StandardSocketOptions.SO_BROADCAST, true);
-        //TODO replace by : 
-            //channel.socket().bind(new InetSocketAddress(port_number));
+        
+        //old:
+        //channel.socket().bind(new InetSocketAddress(src_ip_info_.getIp_src(),port_number));
+        // replaced by : 
+        channel.socket().bind(new InetSocketAddress(port_number));
             //to be able to receive packets from whatever address
             //the current change was needed for testing
         
-        channel.socket().bind(new InetSocketAddress(src_ip_info_.getIp_src(),port_number));
+        
         //two selectors because the channel will be ready to write most of the time
         //but we usually won't have anything to write most of the time and it
         //might not be ready to read most of the time which is usually what we

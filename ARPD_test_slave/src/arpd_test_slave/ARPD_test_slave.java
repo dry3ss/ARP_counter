@@ -27,7 +27,7 @@ public class ARPD_test_slave {
             
             int common_port_slaves=ARDP_SLAVE_PORT;
             
-            String addr_slave_1="192.168.1.100";
+            String addr_slave_1="192.168.1.94";
             String addr_slave_2="192.168.1.101";
             String addr_slave_3="192.168.1.102";
                 
@@ -51,16 +51,16 @@ public class ARPD_test_slave {
             //Il faudra re CHANGER ça car dans le cas du MASTER les paquets viennent
             //de plusieurs sous réseaux différents donc avec des addresses différentes
             ARPDServer.ARPDServerSlave s1= new ARPDServer.ARPDServerSlave(s1_src_info,cr1);
-            ARPDServer.ARPDServerSlave s2= new ARPDServer.ARPDServerSlave(s2_src_info,cr2);
-            ARPDServer.ARPDServerSlave s3= new ARPDServer.ARPDServerSlave(s3_src_info,cr3);
+            //ARPDServer.ARPDServerSlave s2= new ARPDServer.ARPDServerSlave(s2_src_info,cr2);
+            //ARPDServer.ARPDServerSlave s3= new ARPDServer.ARPDServerSlave(s3_src_info,cr3);
             
             s1.setPasswd(password);
-            s2.setPasswd(password);
-            s3.setPasswd(password);
+            //s2.setPasswd(password);
+            //s3.setPasswd(password);
             
             s1.start();
-            s2.start();
-            s3.start();
+            //s2.start();
+            //s3.start();
             
             System.out.println("servers started");
             boolean a=true;
@@ -73,8 +73,8 @@ public class ARPD_test_slave {
             Thread.sleep(1000);
             
             s1.close();
-            s2.close();
-            s3.close();
+            //s2.close();
+            //s3.close();
             
             
         }catch(Exception e)

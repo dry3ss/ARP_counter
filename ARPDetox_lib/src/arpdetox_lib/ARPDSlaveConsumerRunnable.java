@@ -232,10 +232,7 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
                 correctly_handled=handleConfirmation(ARPDMessage.fromBytes(type_sent,bytes_received));
             }
 
-        } catch (UnknownHostException | InvalidParameterException ex) 
-        {
-            logger.log(Level.SEVERE, null, ex);
-        }
+        } catch (UnknownHostException | InvalidParameterException ex){}
         if(!correctly_handled)
             dumpMsg(bytes_received);
     
