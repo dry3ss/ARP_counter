@@ -201,6 +201,8 @@ public class IPInfoContainers {
             //if other is the broadcast address 255.255.255.255
             if(other_addr.equals(BROADCAST_IP_ADDRESS))
                 return true;
+            else if(other_addr.equals(this.address_dst))
+                return true;
             return false;
         }
         

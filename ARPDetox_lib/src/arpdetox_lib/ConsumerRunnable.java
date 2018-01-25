@@ -5,6 +5,8 @@
  */
 package arpdetox_lib;
 
+import static arpdetox_lib.ARPDLoggers.action_logger;
+import static arpdetox_lib.ARPDLoggers.message_logger;
 import static arpdetox_lib.ARPDMessage.bytesToHex;
 import static arpdetox_lib.ARPDMessage.getMsgTypeFromBytes;
 import arpdetox_lib.UDPServer.RunnableUDPServerInterface;
@@ -14,6 +16,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import quick_logger.LockedLogger;
 
 /**
  *
@@ -24,7 +27,8 @@ public class ConsumerRunnable<T extends UDPServer> extends RunnableUDPServerInte
 {
     protected static int TIMEOUT_CONSUMER_THREAD=UDPServer.DEFAULT_TIMEOUT_MS*2;
     protected  TimeUnit TIMEOUT_UNIT=TimeUnit.MILLISECONDS;
-    protected final static Logger logger=Logger.getLogger(ARPDetox_lib.class.getName());
+    protected final static LockedLogger action_logger=ARPDLoggers.action_logger;
+    protected final static LockedLogger mess_logger=message_logger;
     
     @Override
     public void run()
@@ -55,7 +59,7 @@ public class ConsumerRunnable<T extends UDPServer> extends RunnableUDPServerInte
     {
          if(bytes_received==null ||  bytes_received.length<1)
         {
-            logger.log(Level.WARNING, "Null or empty message received");
+            action_logger.log(Level.WARNING, "Null or empty message received");
             return;
         }
         //Try to cast it as an ARPDMessage
@@ -63,11 +67,11 @@ public class ConsumerRunnable<T extends UDPServer> extends RunnableUDPServerInte
         {
             ARPDMessage.ARPD_MESSAGE_TYPE type_sent=getMsgTypeFromBytes(bytes_received);
             ARPDMessage mess=ARPDMessage.fromBytes(type_sent,bytes_received);
-            logger.log(Level.WARNING, "Could not handle the following ARPDMessage message :\n{0}", mess.toString(0));
+            action_logger.log(Level.WARNING, "Could not handle the following ARPDMessage message :\n"+mess.toString(0) );
         } catch (UnknownHostException | InvalidParameterException ex) 
         {
-            logger.log(Level.WARNING, "Could not cast the following as ARPDMessage, dumping :\n{0}\nReason:\n", bytesToHex(bytes_received));
-            logger.log(Level.WARNING, null, ex);
+            action_logger.log(Level.WARNING, "Could not cast the following as ARPDMessage, dumping :\n"+bytesToHex(bytes_received)+"\nReason:\n");
+            action_logger.log(Level.WARNING, null, ex);
         }
     }
 }

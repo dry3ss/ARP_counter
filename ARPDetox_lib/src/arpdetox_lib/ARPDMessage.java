@@ -404,7 +404,7 @@ public abstract class ARPDMessage {
         
         public static final int LENGTH_TIMESTAMP_NOONCE=Integer.BYTES+Long.BYTES;
         public static final int BYTES=LENGTH_TIMESTAMP_NOONCE+Signature.BYTES;
-        public static final long TIMESTAMP_HALF_WINDOW_MS=5000;
+        public static final long TIMESTAMP_HALF_WINDOW_MS=6000000;
         final byte[] payload;
         
         //CONSTRUCTOR 1 : when you have a payload, a noonce and want to sign&send it

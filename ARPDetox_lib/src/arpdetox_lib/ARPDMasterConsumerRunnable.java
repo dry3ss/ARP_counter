@@ -9,6 +9,7 @@ import static arpdetox_lib.ARPDMessage.*;
 import static arpdetox_lib.ARPDMessage.ARPD_MESSAGE_TYPE.*;
 import arpdetox_lib.ARPDServer.*;
 import static arpdetox_lib.ARPDServer.ARDP_SLAVE_PORT;
+import static arpdetox_lib.ARPDServer.mess_logger;
 import arpdetox_lib.ARPDSession.*;
 import static arpdetox_lib.ARPDSession.ARPDSessionState.*;
 import arpdetox_lib.ARPDSessionContainer.*;
@@ -62,11 +63,18 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
         //of our confirmation is ANSWER as well !
         //the only difference is the boolean answer_is_1_confirmation_is_0
         ARPDMessage.ARPD_MESSAGE_TYPE answer_type=type_sent;
+        MACAddress mac_slave=received.getMAC_src();
         int rcv_order_nb=received.getSuffix().getNoonce();        
         //get the slave's address
         Inet4Address addr_slave_received=received.getIP_src();
         int slave_port=ARDP_SLAVE_PORT;
         DestIPInfo dest_slave=new DestIPInfo(addr_slave_received,slave_port);
+        
+        
+        
+	mess_logger.log(Level.INFO,"Received ANSWER:\n"+received.toString(0, server.passwd,System.currentTimeMillis()));
+        
+        
         
                     //SESSION and ORDER_NB verification & handling
         
@@ -90,12 +98,12 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
         //only drop if older order, not newer than expected !
         else if(rcv_order_nb<session_corresponding_to_received_msg.getCurrentOrderId())
         {   //debug only
-            logger.log(Level.FINER, "Received answer from slave{0}\nBut the order nb is {1} and we expected {2}\nWill drop the msg", new Object[]{addr_slave_received, rcv_order_nb, session_corresponding_to_received_msg.getCurrentOrderId()});
+            action_logger.log(Level.FINER, "Received answer from slave"+addr_slave_received+"\n\tBut the order nb is "+rcv_order_nb+" and we expected "+session_corresponding_to_received_msg.getCurrentOrderId()+"\n\tWill drop the msg");
             return true;
         }
         else if(! ARPDSessionState.areBothStartOrBothStop(expected_state_before_answer, session_corresponding_to_received_msg.getCurrentState()))
         {   //debug only
-            logger.log(Level.WARNING, "Received answer from slave{0}\nWEIRD part : a GOOD order_nb BUT the msg's state nb is {1} and we expected {2}\nWill drop the msg", new Object[]{addr_slave_received, expected_state_before_answer.getConfirmedState(), session_corresponding_to_received_msg.getCurrentState()});
+            action_logger.log(Level.WARNING, "Received answer from slave"+addr_slave_received+"\n\tWEIRD part : a GOOD order_nb BUT the msg's state nb is "+expected_state_before_answer.getConfirmedState()+" and we expected "+session_corresponding_to_received_msg.getCurrentState()+"\n\tWill drop the msg");
             return true;
         }
                 
@@ -113,17 +121,26 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
         ARPDSessionState currently_stored_session_state=session_corresponding_to_received_msg.getCurrentState();
         if(currently_stored_session_state.isInUnconfirmedButValidState())
         {
-            logger.log(Level.INFO, "Received answer from slave{0}\nWill start/stop ARPDetox and send confirmation now", addr_slave_received);
+            action_logger.log(Level.INFO, "Received answer from slave"+addr_slave_received+"->"+mac_slave.toString()+"=>"+type_sent+"\n\tWill start/stop ARPDetox and send confirmation now");
             //TODO START/STOP COUNTERMEASURE !
+            if(type_sent==ANSWER_ACK_START)
+                ARPDetoxCountermeasure.addStaticEntry(addr_slave_received, mac_slave);
+            else
+                ARPDetoxCountermeasure.removeStaticEntry(addr_slave_received);
             //set the state to the corresponding confirmed state
             session_corresponding_to_received_msg.setCurrentState(currently_stored_session_state.getConfirmedState());
+            
+            
+            mess_logger.log(Level.INFO,"Sent CONFIRMATION:\n"+confirmation_to_send.toString(0, server.passwd,System.currentTimeMillis()));
+        
+            
             ARPDBroadcastSession br_session=this.server.getBroadcastSession();
             if(br_session.getCurrentOrderId()== session_corresponding_to_received_msg.getCurrentOrderId() && br_session.getCanStopBroadcastBasedOnAnswersSoFar())
                 br_session.stopLoopMessage();
         }
         else
         {
-            logger.log(Level.FINER, "Received answer from slave{0}\nBut this is just a duplicate\nWill send confirmation now", addr_slave_received);
+            action_logger.log(Level.FINER, "Received answer from slave"+addr_slave_received+"->"+mac_slave.toString()+"=>"+type_sent+"\n\tBut this is just a duplicate\n\tWill send confirmation now");
         }
         //only send the confirmation once, will get sent again if we receive another confirmation_to_send from the 
         //same slave
@@ -219,7 +236,7 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
     {
          if(bytes_received==null ||  bytes_received.length<1)
         {
-            logger.log(Level.WARNING, "Null or empty message received");
+            action_logger.log(Level.WARNING, "Null or empty message received");
             return;
         }
         //Try to cast it as an ARPDMessage
@@ -227,11 +244,11 @@ public class ARPDMasterConsumerRunnable extends ConsumerRunnable<ARPDServerMaste
         {
             ARPDMessage.ARPD_MESSAGE_TYPE type_sent=getMsgTypeFromBytes(bytes_received);
             ARPDMessage mess=ARPDMessage.fromBytes(type_sent,bytes_received);
-            logger.log(Level.WARNING, "Could not handle the following ARPDMessage message :\n{0}", mess.toString(0,server.passwd,System.currentTimeMillis()));
+            action_logger.log(Level.WARNING, "Could not handle the following ARPDMessage message :\n"+mess.toString(0,server.passwd,System.currentTimeMillis()));
         } catch (UnknownHostException | InvalidParameterException ex) 
         {
-            logger.log(Level.WARNING, "Could not cast the following as ARPDMessage, dumping :\n{0}\nReason:\n", bytesToHex(bytes_received));
-            logger.log(Level.WARNING, null, ex);
+            action_logger.log(Level.WARNING, "Could not cast the following as ARPDMessage, dumping :\n"+bytesToHex(bytes_received)+"\nReason:\n");
+            action_logger.log(Level.WARNING, null, ex);
         }
     }
 

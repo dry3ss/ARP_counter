@@ -5,6 +5,7 @@
  */
 package arpdetox_lib;
 
+import static arpdetox_lib.ARPDLoggers.message_logger;
 import arpdetox_lib.ARPDMessage.*;
 import static arpdetox_lib.ARPDMessage.ARPD_MESSAGE_TYPE.*;
 import arpdetox_lib.ARPDSession.*;
@@ -22,6 +23,7 @@ import java.nio.channels.ClosedChannelException;
 import java.security.InvalidParameterException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import quick_logger.LockedLogger;
 
 /**
  *
@@ -34,6 +36,7 @@ public class ARPDServer
     
     public static final int ARDP_MASTER_PORT=2600;
     public static final int ARDP_SLAVE_PORT=2605;
+    protected final static LockedLogger mess_logger=message_logger;
     
     public static class ARPDServerMaster extends UDPServer<ARPDServerMaster>
     {
@@ -87,7 +90,8 @@ public class ARPDServer
                 int order_nb=getBroadcastSession().getNextOrderId();
                 ARPDOrder order=new ARPDOrder(msg_type,everyone_acts_or_only_dst_,action_delay,getSrc_ip_info().getIp_src(),getSrc_ip_info().getMac_src(),addr_primary_slave_dst,order_nb,passwd);
                 setupSessions(order_nb,everyone_acts_or_only_dst_,addr_primary_slave_dst,state_after_sent);
-		logger.log(Level.INFO,order.toString(0, passwd,System.currentTimeMillis()));
+		mess_logger.log(Level.INFO,"Sent ORDER:\n"+order.toString(0, passwd,System.currentTimeMillis()));
+                action_logger.log(Level.INFO,"Sent order: "+(start_is_1_stop_is_0 ? "START": "STOP")+" with dest : "+ip_dst_+" with an action delay of "+action_delay+"and everyone should act ? "+everyone_acts_or_only_dst_);
                 getBroadcastSession().sendLoopMessage(order.toBytes());
             } catch (UnknownHostException | InvalidParameterException ex) {
                 Logger.getLogger(ARPDServer.class.getName()).log(Level.SEVERE, null, ex);

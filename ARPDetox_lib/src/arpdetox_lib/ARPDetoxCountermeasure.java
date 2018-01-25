@@ -77,7 +77,7 @@ public class ARPDetoxCountermeasure {
         {
             if(pair.ip.equals(ip) && pair.mac.equals(mac))
             {
-                return;//a line with the same IP/MAC is already present, no need to add it
+                break;
             }
             if(pair.ip.equals(ip))
             {
@@ -183,7 +183,7 @@ public class ARPDetoxCountermeasure {
         }
     }
     
-    private static String executeCommand(String command) {
+    protected static String executeCommand(String command) {
 
 		StringBuilder output = new StringBuilder();
 

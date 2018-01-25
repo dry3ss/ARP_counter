@@ -10,6 +10,7 @@ import static arpdetox_lib.ARPDMessage.getAllRemainingBytesFromByteBuffer;
 import static arpdetox_lib.ARPDServer.ARDP_SLAVE_PORT;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 /**
  *
  * @author will
@@ -22,27 +23,21 @@ public class ARPD_test_slave {
     public static void main(String[] args) {
     try {
             
-            byte[] password= "lala".getBytes();
+            //ARPDLoggers.action_logger.log(Level.FINEST,"test finest");
+            //ARPDLoggers.message_logger.log("test1");
+            byte[] password= "lala".getBytes(); 
             
             
             int common_port_slaves=ARDP_SLAVE_PORT;
             
-            String addr_slave_1="192.168.1.100";
-            String addr_slave_2="192.168.1.101";
-            String addr_slave_3="192.168.1.102";
+            String addr_slave_1="192.168.20.11";
                 
             IPInfoContainers.SourceIPInfo s1_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_1,common_port_slaves);
-            IPInfoContainers.SourceIPInfo s2_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_2,common_port_slaves);
-            IPInfoContainers.SourceIPInfo s3_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_3,common_port_slaves);
             
             IPInfoContainers.DestIPInfo s1_dst_info = new IPInfoContainers.DestIPInfo(addr_slave_1,common_port_slaves);
-            IPInfoContainers.DestIPInfo s2_dst_info = new IPInfoContainers.DestIPInfo(addr_slave_2,common_port_slaves);
-            IPInfoContainers.DestIPInfo s3_dst_info = new IPInfoContainers.DestIPInfo(addr_slave_3,common_port_slaves);
             
             
             ARPDSlaveConsumerRunnable cr1= new ARPDSlaveConsumerRunnable();
-            ARPDSlaveConsumerRunnable cr2= new ARPDSlaveConsumerRunnable();
-            ARPDSlaveConsumerRunnable cr3= new ARPDSlaveConsumerRunnable();
             
             
             //ATTENTION : pour tester jai été forcé de changer le constructeur de UDPServer
@@ -51,16 +46,10 @@ public class ARPD_test_slave {
             //Il faudra re CHANGER ça car dans le cas du MASTER les paquets viennent
             //de plusieurs sous réseaux différents donc avec des addresses différentes
             ARPDServer.ARPDServerSlave s1= new ARPDServer.ARPDServerSlave(s1_src_info,cr1);
-            //ARPDServer.ARPDServerSlave s2= new ARPDServer.ARPDServerSlave(s2_src_info,cr2);
-            //ARPDServer.ARPDServerSlave s3= new ARPDServer.ARPDServerSlave(s3_src_info,cr3);
             
             s1.setPasswd(password);
-            //s2.setPasswd(password);
-            //s3.setPasswd(password);
-            
+            System.out.println(System.currentTimeMillis());
             s1.start();
-            //s2.start();
-            //s3.start();
             
             System.out.println("servers started");
             boolean a=true;
@@ -69,12 +58,9 @@ public class ARPD_test_slave {
                 Thread.sleep(30);
             }
             
-            //s3.send(to_send3);
             Thread.sleep(1000);
             
             s1.close();
-            //s2.close();
-            //s3.close();
             
             
         }catch(Exception e)

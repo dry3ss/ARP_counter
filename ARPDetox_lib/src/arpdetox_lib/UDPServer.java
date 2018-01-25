@@ -22,6 +22,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import quick_logger.LockedLogger;
 
 /**
  *
@@ -35,7 +36,7 @@ public class UDPServer<T extends UDPServer>
     public static final int MAX_MSG_STORED=30;
     public static final int DEFAULT_TIMEOUT_MS=30;//we will timeout after 30 ms by default
     
-    protected final static Logger logger=Logger.getLogger(ARPDetox_lib.class.getName());
+    protected final static LockedLogger action_logger=ARPDLoggers.action_logger;
     
     
     public static class Message_InetSocketAddress_Pair
@@ -284,8 +285,8 @@ public class UDPServer<T extends UDPServer>
 			{
 			    System.err.println("Nb of bytes written mismatch : bytesSent= "+bytesSent+" position()= "+mess_to_write.getMess().limit());
 			}
-			else
-			    System.out.println(getNameIpPort()+":"+"Message sent to "+mess_to_write.getSocketAddress().getAddress().getHostAddress()+"::"+mess_to_write.getPort());
+			//else
+			    //System.out.println(getNameIpPort()+":"+"Message sent to "+mess_to_write.getSocketAddress().getAddress().getHostAddress()+"::"+mess_to_write.getPort());
                 
 		    }
                     else
@@ -299,8 +300,9 @@ public class UDPServer<T extends UDPServer>
                             {
                                 System.err.println("Nb of bytes written mismatch : bytesSent= "+bytesSent+" position()= "+mess_to_write.getMess().limit());
                             } 
-			    else
-				System.out.println(getNameIpPort()+":"+"Message sent to "+broadcast_address.getHostAddress()+"::"+mess_to_write.getPort());
+			    //else
+				//System.out.println(getNameIpPort()+":"+"Message sent to "+broadcast_address.getHostAddress()+"::"+mess_to_write.getPort());
+                            mess_to_write.getMess().rewind();
                         }
                     }
                 }
