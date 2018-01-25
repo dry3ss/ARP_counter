@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 public class UDPServer<T extends UDPServer>
 {
     
-    public static final int MAX_SIZE_PACKET=60;//60 bytes max
+    public static final int MAX_SIZE_PACKET=70;//60 bytes max
     public static final int MAX_MSG_STORED=30;
     public static final int DEFAULT_TIMEOUT_MS=30;//we will timeout after 30 ms by default
     
@@ -53,7 +53,7 @@ public class UDPServer<T extends UDPServer>
         public Message_InetSocketAddress_Pair(Message_InetSocketAddress_Pair other)
         {
             socket_address=other.socket_address;
-            setMess(other.mess.array());
+            setMess(other.mess);
             is_full_broadcast=other.is_full_broadcast;
         }
 

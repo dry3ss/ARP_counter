@@ -5,6 +5,7 @@
  */
 package arpdetox_lib;
 
+import static arpdetox_lib.IPInfoContainers.isMultipleAddress;
 import java.net.Inet4Address;
 
 /**
@@ -123,16 +124,14 @@ public class ARPDBroadcastSession extends ARPDSession<ARPDServer.ARPDServerMaste
 
     public boolean getCanStopBroadcastBasedOnAnswersSoFar()
     {
-        //TODO call the broadcast_session's method checking whether we should stop sending the order message
-        //based on the number of answers and such ...
         ARPDSessionContainer.ARPDSessionTableContainer session_table= this.server.getSessionTable();
         boolean r=false;
         session_table.getLock().readLock().lock();
         try{
             int nb_anwers=0;
             //if multiple address than not one that corresponds therefore 
-            //true if eveyone of this multiple network has answered 
-            boolean primary_dst_has_answered=(!this.dst_ip_info.isMultipleAddress());
+            //true if eveyone of this multiple network has answered (so for now, true always if multiple addr)
+            boolean primary_dst_has_answered=(IPInfoContainers.isMultipleAddress(this.current_primary_ip_dst) );
             for (ARPDSession s : session_table.getContent())
             {
                 if(s.getCurrentOrderId()==this.current_order_id)
@@ -143,7 +142,7 @@ public class ARPDBroadcastSession extends ARPDSession<ARPDServer.ARPDServerMaste
                 }
             }
             //if we have the right nb of answer and the main dst has answered than we're good to stop!
-            if(nb_anwers==this.getNumber_different_answers_expected() && primary_dst_has_answered)
+            if(nb_anwers>=this.getNumber_different_answers_expected() && primary_dst_has_answered)
                 r=true;
         }finally
         {

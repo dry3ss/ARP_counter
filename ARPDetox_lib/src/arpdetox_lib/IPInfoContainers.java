@@ -6,7 +6,9 @@
 package arpdetox_lib;
 
 import static arpdetox_lib.ARPDMessage.getIpv4AddressFromString;
+import static arpdetox_lib.IPInfoContainers.DestIPInfo.BROADCAST_IP_ADDRESS;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -21,6 +23,13 @@ import java.util.logging.Logger;
  * @author will
  */
 public class IPInfoContainers {
+    
+    public static boolean isMultipleAddress(InetAddress add)
+    {
+        if(add.equals(BROADCAST_IP_ADDRESS))
+            return true;
+        return false;
+    }
     public static class SourceIPInfo
     {
         //string vars for debugging and printing

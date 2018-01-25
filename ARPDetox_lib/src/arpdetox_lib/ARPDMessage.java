@@ -843,9 +843,9 @@ public abstract class ARPDMessage {
                 throws InvalidParameterException, UnknownHostException
         {
             if(type != ARPD_MESSAGE_TYPE.ANSWER_ACK_STOP && type != ARPD_MESSAGE_TYPE.ANSWER_ACK_START)
-                throw new InvalidParameterException("This msg is not of the right type to be an order");
+                throw new InvalidParameterException("This msg is not of the right type to be an answer(/confirmation)");
             if(msg.length!=this.BYTES())
-                throw new InvalidParameterException("This msg doesn't have the right size for an order");
+                throw new InvalidParameterException("This msg doesn't have the right size for an answer(/confirmation), expected: "+this.BYTES()+" got: "+msg.length);
             
             suffix=new Suffix(msg);
             

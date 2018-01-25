@@ -45,7 +45,10 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
         boolean primary_dst=addr_dst_received.equals(src_ip_info.getIp_src());
         boolean secondary_dst= !primary_dst && received.isEveryone_acts_or_only_dst();
         if(!primary_dst  && !secondary_dst)
-            return false;//not a message for us
+        {
+            logger.log(Level.INFO,"Message received, but it's not for us");
+            return true;//not a message for us
+        }
         //check validity of signature and ...
         long timestamp_now=System.currentTimeMillis();
         boolean good=received.getSuffix().isValid(server.passwd,timestamp_now);
@@ -158,11 +161,11 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
         ARPDMessage.ARPD_MESSAGE_TYPE answer_type=null;
         ARPDSessionState new_expected_state=null;
         switch (type_sent) {
-            case ORDER_START_ARPD:
+            case ANSWER_ACK_START:
                 new_expected_state=START_ANSWERED;
                 answer_type=ANSWER_ACK_START;
                 break;
-            case ORDER_STOP_ARPD:
+            case ANSWER_ACK_STOP:
                 new_expected_state=STOP_ANSWERED;
                 answer_type=ANSWER_ACK_STOP;
                 break;

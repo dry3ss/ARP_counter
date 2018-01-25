@@ -25,7 +25,7 @@ public class ARPD_test_master {
             
             byte[] password= "lala".getBytes();
             
-            String localhost="192.168.1.87";            
+            String localhost="192.168.1.94";            
             int port_master=ARDP_MASTER_PORT;         
             
             
@@ -76,7 +76,7 @@ public class ARPD_test_master {
 	    //############################""""
 */
 	    System.out.println("sending");
-            s1.sendStartARPD("192.168.1.1", (short)1000, true);
+            s1.sendStartARPD("192.168.1.100", (short)1000, false);
             
             Thread.sleep(10000);
             

@@ -87,7 +87,8 @@ public class ARPDetox_lib {
                             return;
                     }
                     String a=answer.toString(0,password,System.currentTimeMillis());
-                    System.out.println(a);
+                    //System.out.println(a);
+                    bytes_sent=answer.toBytes();
                     
                 }
                 
@@ -97,7 +98,23 @@ public class ARPDetox_lib {
         }  catch (InvalidParameterException ex) {
             Logger.getLogger(ARPDetox_lib.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        //RECEIVE answer
+        try
+        {
+            addr_slave =ARPDMessage.getIpv4AddressFromString("192.168.1.10");
+            MACAddress mac_slave=new MACAddress("aa:bb:cc:dd:ee:00");   
+            ARPDMessage.ARPD_MESSAGE_TYPE type_sent=getMsgTypeFromBytes(bytes_sent);
+            if(type_sent.getAssociatedClass() == ARPDAnswer.class)
+            {
+                ARPDAnswer received=ARPDMessage.fromBytes(type_sent,bytes_sent);
+                System.out.println(received.toString(0,password,System.currentTimeMillis()));
+                                
+            }
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ARPDetox_lib.class.getName()).log(Level.SEVERE, null, ex);
+        }  catch (InvalidParameterException ex) {
+            Logger.getLogger(ARPDetox_lib.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         
         
@@ -107,8 +124,10 @@ public class ARPDetox_lib {
     /**
      * @param args the command line arguments
      */
-    public static void maina(String[] args) {
+    public static void main(String[] args) {
        testMsgInterpret();
+       if(true)
+           System.exit(0);
        Inet4Address ip;
         try {
             ip = getIpv4AddressFromString("192.168.1.151");

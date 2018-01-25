@@ -27,17 +27,17 @@ public class ARPD_test_slave {
             
             int common_port_slaves=ARDP_SLAVE_PORT;
             
-            String addr_slave_1="192.168.1.94";
+            String addr_slave_1="192.168.1.100";
             String addr_slave_2="192.168.1.101";
             String addr_slave_3="192.168.1.102";
                 
-            IPInfoContainers.SourceIPInfo s1_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_3,common_port_slaves);
-            IPInfoContainers.SourceIPInfo s2_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_1,common_port_slaves);
-            IPInfoContainers.SourceIPInfo s3_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_2,common_port_slaves);
+            IPInfoContainers.SourceIPInfo s1_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_1,common_port_slaves);
+            IPInfoContainers.SourceIPInfo s2_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_2,common_port_slaves);
+            IPInfoContainers.SourceIPInfo s3_src_info= new IPInfoContainers.SourceIPInfo(addr_slave_3,common_port_slaves);
             
-            IPInfoContainers.DestIPInfo s1_dst_info = new IPInfoContainers.DestIPInfo(addr_slave_3,common_port_slaves);
-            IPInfoContainers.DestIPInfo s2_dst_info = new IPInfoContainers.DestIPInfo("255.255.255.255",common_port_slaves);
-            IPInfoContainers.DestIPInfo s3_dst_info = new IPInfoContainers.DestIPInfo("255.255.255.255",common_port_slaves);
+            IPInfoContainers.DestIPInfo s1_dst_info = new IPInfoContainers.DestIPInfo(addr_slave_1,common_port_slaves);
+            IPInfoContainers.DestIPInfo s2_dst_info = new IPInfoContainers.DestIPInfo(addr_slave_2,common_port_slaves);
+            IPInfoContainers.DestIPInfo s3_dst_info = new IPInfoContainers.DestIPInfo(addr_slave_3,common_port_slaves);
             
             
             ARPDSlaveConsumerRunnable cr1= new ARPDSlaveConsumerRunnable();
