@@ -226,12 +226,9 @@ public class UDPServer<T extends UDPServer>
         //allow broadcasting on our socket
         channel.setOption(StandardSocketOptions.SO_BROADCAST, true);
         
-        //old:
-        //channel.socket().bind(new InetSocketAddress(src_ip_info_.getIp_src(),port_number));
         // replaced by : 
         channel.socket().bind(new InetSocketAddress(port_number));
             //to be able to receive packets from whatever address
-            //the current change was needed for testing
         
         
         //two selectors because the channel will be ready to write most of the time

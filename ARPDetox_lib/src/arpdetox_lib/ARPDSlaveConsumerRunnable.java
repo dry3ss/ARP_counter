@@ -34,6 +34,7 @@ public class ARPDSlaveConsumerRunnable extends ConsumerRunnable<ARPDServerSlave>
 {
     public boolean handleOrder(ARPDMessage.ARPDOrder received)
     {
+        action_logger.log(Level.SEVERE,"Message received!");
         ARPDMessage.ARPD_MESSAGE_TYPE type_sent=received.getMsg_type();
         
                     //GENERAL CHECKS

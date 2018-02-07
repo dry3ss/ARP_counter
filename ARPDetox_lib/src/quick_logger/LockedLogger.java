@@ -57,20 +57,18 @@ public class LockedLogger {
             // This block configure the logger with handler and formatter  
             fh = new FileHandler(sFileName,true);  
             fh.setLevel(Level.ALL);
-            logger.addHandler(fh);  
-            logger.setLevel(Level.ALL);
+            logger.addHandler(fh);
             MyFormatter formatter = new MyFormatter();  
-            fh.setFormatter(formatter);  
+            fh.setFormatter(formatter);    
             logger.setUseParentHandlers(false);
-            // the following statement is used to log any messages
-            logger.info("\n\n########################################################");
-            this.log("Start_of_the_log : "+ new SimpleDateFormat("HH:mm:ss").format(new Date()) );             
-            logger.info("########################################################\n\n");
-        } catch (SecurityException e) {  
-            e.printStackTrace();  
-        } catch (IOException e) {  
-            e.printStackTrace();  
-        }  
+        } catch (SecurityException | IOException e) {  
+            e.printStackTrace();
+        } 
+        logger.setLevel(Level.ALL);
+        // the following statement is used to log any messages
+        logger.info("\n\n########################################################");
+        this.log("Start_of_the_log : "+ new SimpleDateFormat("HH:mm:ss").format(new Date()) );             
+        logger.info("########################################################\n\n");
             
     }
     
