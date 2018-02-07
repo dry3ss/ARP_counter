@@ -14,7 +14,7 @@ import quick_logger.LockedLogger;
  */
 public class ARPDLoggers {
     
-    public static final String loggers_dir="PFE_logs";
+    public static final String loggers_dir="ARPD_logs";
     
     public static final LockedLogger message_logger;  
     

@@ -42,7 +42,7 @@ public class ARPD_test_master {
             
             byte[] password= "lala".getBytes();
             
-            String localhost="192.168.20.10";            
+            String ip_master="192.168.20.10";            
             int port_master=ARDP_MASTER_PORT;         
             
             
@@ -50,7 +50,7 @@ public class ARPD_test_master {
             String addr_slave_1="192.168.20.11";
 	    
                 
-            IPInfoContainers.SourceIPInfo s1_src_info= new IPInfoContainers.SourceIPInfo(localhost,port_master);
+            IPInfoContainers.SourceIPInfo s1_src_info= new IPInfoContainers.SourceIPInfo(ip_master,port_master);
             
             
             ARPDMasterConsumerRunnable cr1= new ARPDMasterConsumerRunnable();
